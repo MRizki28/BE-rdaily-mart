@@ -10,7 +10,7 @@ export class ProductService {
         private readonly productModel: typeof ProductModel,
     ) { }
 
-    async findAll(): Promise<any> {
+    async getAllData(): Promise<any> {
         try {
             const data = await this.productModel.findAll();
             if (!data || data.length == 0) {

@@ -10,9 +10,9 @@ export class ProductController {
     ) { }
 
     @Get()
-    async findAll(): Promise<any> {
+    async getAllData(): Promise<any> {
         try {
-            const data = await this.productService.findAll();
+            const data = await this.productService.getAllData();
             return {data}
         } catch (error) {
             console.error('Error while fetching products:', error);
