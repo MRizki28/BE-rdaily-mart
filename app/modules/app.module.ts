@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../Controllers/app.controller';
-import { AppService } from '../Service/app.service';
+import { AppController } from '../controllers/app.controller';
+import { AppService } from '../service/app.service';
+import { ProductModule } from './product/product.module';
 import { SequelizeModule } from '@nestjs/sequelize';
-
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -12,9 +12,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
       username: 'root',
       password: '',
       database: 'db_nest',
-      autoLoadModels: true, // Setel ke true jika Anda ingin Sequelize memuat model secara otomatis
-      synchronize: true, // Setel ke true jika Anda ingin Sequelize menyinkronkan model dengan basis data (hanya untuk pengembangan)
+      autoLoadModels: true,
+      synchronize: true,
     }),
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

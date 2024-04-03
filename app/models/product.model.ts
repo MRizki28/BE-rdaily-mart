@@ -1,9 +1,9 @@
 import { Column, DataType, Model, Table } from "sequelize-typescript";
 
 @Table({
-    tableName: 'tb_mahasiswa' 
+    tableName: 'tb_product' 
 })
-export class mahasiswaModel extends Model {
+export class ProductModel extends Model<ProductModel> {
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -16,5 +16,17 @@ export class mahasiswaModel extends Model {
         type: DataType.STRING,
         allowNull: false,
     })
-    name: string;
+    product_name: string;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    stok: number;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
+    product_image: string;
 }
