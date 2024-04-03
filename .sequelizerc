@@ -1,0 +1,12 @@
+// path module from Node.js standard library
+const path = require('path');
+
+// Exporting an object containing paths for database-related files
+module.exports = {
+   // directory containing database seeders (data population scripts)
+   'seeders-path': path.resolve('app/database', 'seeders'),
+   // Path to the directory containing database migrations (schema change scripts)
+   'migrations-path': path.resolve('app/database', 'migrations'),
+   // Database configuration file
+   'config': path.resolve('app/database', 'config.js'), 
+}
