@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false
   },
   "include": [
-    "./*"
-, "main.ts"  ]
+    "./*",
+    "main.ts"
+  ]
 }
