@@ -1,7 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
-import { ProductModel } from 'app/models/product.model';
+import { Body, Controller, Get, Post, Req, UploadedFile, UseInterceptors, UsePipes } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from 'app/service/product/product.service';
-import { response } from 'express';
 
 @Controller('product')
 export class ProductController {
@@ -13,11 +12,22 @@ export class ProductController {
     async getAllData(): Promise<any> {
         try {
             const data = await this.productService.getAllData();
-            return {data}
+            return data
         } catch (error) {
             console.error('Error while fetching products:', error);
-            throw error; 
+            throw error;
         }
     }
-    
+
+    @Post()
+    @UseInterceptors(FileInterceptor('product_image'))
+    async createData(@UploadedFile() productImage, @Body() productData): Promise<any> {
+        try {
+            const data = await this.productService.createData(productData, productImage);
+            return data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 }
