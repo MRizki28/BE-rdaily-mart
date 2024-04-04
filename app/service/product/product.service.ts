@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ProductModel } from '../../models/product.model';
 import { HttpResponseTraits } from '../../Traits/HttpResponseTraits';
-import { ProductRequest } from '../../Request/product/product.request';
+import { ProductRequest } from '../../request/product/product.request';
 import * as Joi from 'joi';
 import { createWriteStream } from 'fs';
 
