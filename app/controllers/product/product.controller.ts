@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UploadedFile, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UploadedFile, UseInterceptors, UsePipes } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from 'app/service/product/product.service';
 
@@ -9,10 +9,13 @@ export class ProductController {
     ) { }
 
     @Get()
-    async getAllData(): Promise<any> {
+    async getAllData(
+        @Query('page') page: number = 1,
+        @Query('pageSize') pageSize: number = 10,
+    ): Promise<any> {
         try {
-            const data = await this.productService.getAllData();
-            return data
+            const data = await this.productService.getAllData(page, pageSize);
+            return data;
         } catch (error) {
             console.error('Error while fetching products:', error);
             throw error;

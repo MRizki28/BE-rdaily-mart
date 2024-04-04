@@ -1,4 +1,4 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from "sequelize-typescript";
 
 @Table({
     tableName: 'tb_product' 
@@ -22,6 +22,12 @@ export class ProductModel extends Model<ProductModel> {
         type: DataType.INTEGER,
         allowNull: false,
     })
+    price: number;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
     stok: number;
 
     @Column({
@@ -29,4 +35,11 @@ export class ProductModel extends Model<ProductModel> {
         allowNull: false,
     })
     product_image: string;
+
+    @CreatedAt
+    created_at: Date;
+
+    @UpdatedAt
+    updated_at: Date;
+
 }

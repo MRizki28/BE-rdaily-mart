@@ -10,24 +10,33 @@ module.exports = {
         allowNull: false,
         primaryKey: true
       },
+
       product_name: {
         type: Sequelize.STRING,
         allowNull: false
       },
+
+      price: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+
       stok: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+
       product_image: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      createdAt: {
-        field: "created_at",
+
+      created_at: {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      updatedAt: {
+
+      updated_at: {
         field: "updated_at",
         type: Sequelize.DATE,
         allowNull: false,
