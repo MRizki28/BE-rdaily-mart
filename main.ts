@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(bodyParser.json());
-  await app.listen(3000);
+  app.enableCors();
+  await app.listen(3002);
 }
 bootstrap();
