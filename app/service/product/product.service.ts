@@ -4,6 +4,8 @@ import { ProductModel } from '../../models/product.model';
 import { HttpResponseTraits } from '../../Traits/HttpResponseTraits';
 import { ProductRequest } from '../../request/product/product.request';
 import { createWriteStream } from 'fs';
+import { unlink } from 'fs/promises';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ProductService {
@@ -25,12 +27,27 @@ export class ProductService {
             } else {
                 const totalCount = await this.productModel.count();
                 const totalPages = Math.ceil(totalCount / pageSize);
+    
+                let nextUrl = null;
+                if (page < totalPages) {
+                    const nextPage = Math.min(page + 1, totalPages);
+                    nextUrl = `product?page=${nextPage}`;
+                }
+    
+                let prevUrl = null;
+                if (page > 1) {
+                    const prevPage = page - 1;
+                    prevUrl = `product?page=${prevPage}`;
+                }
+    
                 return HttpResponseTraits.success({
                     data: data,
                     currentPage: page,
                     totalPages: totalPages,
                     pageSize: pageSize,
-                    totalCount: totalCount
+                    totalCount: totalCount,
+                    nextPage: nextUrl,
+                    prevPage: prevUrl
                 });
             }
         } catch (error) {
@@ -39,7 +56,6 @@ export class ProductService {
         }
     }
     
-
     async createData(productData: any, productImage: any): Promise<any> {
         try {
             const { product_name, stok, price } = productData;
@@ -49,7 +65,7 @@ export class ProductService {
                 const errors = [error.message];
                 return HttpResponseTraits.checkValidation(errors);
             }
-            const filename = productImage.originalname;
+            const filename = `${uuidv4()}-${productImage.originalname}`;
             const uploadPath = `./assets/uploads/product/${filename}`;
             const writeStream = createWriteStream(uploadPath);
             writeStream.write(productImage.buffer);
@@ -68,5 +84,26 @@ export class ProductService {
                 message: 'failed'
             };
         }
+    }
+
+    async deleteData(id: string): Promise<any> {
+        try {
+            const data = await this.productModel.findByPk(id)
+            if (!data) {
+                return HttpResponseTraits.idOrDataNotFound()
+            }
+
+            console.log(data.product_image);
+            const imagePath = "./assets/uploads/product/" + data.product_image;
+            
+            await unlink(imagePath)
+
+            await data.destroy()
+
+            return HttpResponseTraits.delete()
+        } catch (error) {
+            console.log(error);
+        };
+        
     }
 }

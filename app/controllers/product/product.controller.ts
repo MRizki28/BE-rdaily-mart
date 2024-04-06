@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UploadedFile, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UploadedFile, UseInterceptors, UsePipes } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from 'app/service/product/product.service';
 
@@ -33,4 +33,13 @@ export class ProductController {
         }
     }
 
+    @Delete('delete/:id')
+    async deleteData(@Param('id') id: string): Promise<any> {
+        try {
+            const data = await this.productService.deleteData(id)
+            return data
+        } catch (error) {
+            console.log(error);
+        };
+    }
 }
