@@ -1,4 +1,6 @@
-import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from "sequelize-typescript";
+import { allow } from "joi";
+import { AllowNull, BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, Table, UpdatedAt } from "sequelize-typescript";
+import { TypeProductModel } from "./type_product.model";
 
 @Table({
     tableName: 'tb_product' 
@@ -11,6 +13,16 @@ export class ProductModel extends Model<ProductModel> {
         primaryKey: true
     })
     id: string;
+
+    @ForeignKey(() => TypeProductModel)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    id_type_product: string;
+
+    @BelongsTo(() => TypeProductModel, 'id_type_product')
+    typeProduct: TypeProductModel;
 
     @Column({
         type: DataType.STRING,
