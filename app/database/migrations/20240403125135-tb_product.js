@@ -11,6 +11,17 @@ module.exports = {
         primaryKey: true
       },
 
+      id_type_product: {
+        type: Sequelize.UUID, 
+        allowNull: false,
+        references: {
+          model: 'tb_type_product', 
+          key: 'id' 
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+
       product_name: {
         type: Sequelize.STRING,
         allowNull: false
