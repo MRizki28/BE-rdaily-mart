@@ -7,6 +7,7 @@ import { createWriteStream } from 'fs';
 import { unlink } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
+import { TypeProductModel } from 'app/models/type_product.model';
 
 
 @Injectable()
@@ -21,7 +22,8 @@ export class ProductService {
             const offset = (page - 1) * pageSize;
             const data = await this.productModel.findAll({
                 limit: pageSize,
-                offset: offset
+                offset: offset,
+                include: [TypeProductModel]
             });
 
             if (!data || data.length == 0) {
