@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { HttpResponseTraits } from 'app/Traits/HttpResponseTraits';
 import { TypeProductModel } from 'app/models/type_product.model';
-
+import { TypePoductRequest } from 'app/request/typeproduct/typeProduct.request';
 @Injectable()
 export class TypeProductService {
     constructor(
@@ -51,6 +51,30 @@ export class TypeProductService {
         }
         } catch (error) {
             console.log(error);
+        };
+    }
+
+    async createData(typeProductData: any): Promise<any> {
+        try {
+            const { type_product } = typeProductData;
+            const { error } = TypePoductRequest.validate({
+                type_product
+            })
+
+            if (error) {
+                const errors = [error.message];
+                return HttpResponseTraits.checkValidation(errors)
+            }
+            const data = await this.typeProductModel.create({
+                type_product
+            })
+
+            return HttpResponseTraits.success(data)
+        } catch (error) {
+            console.log(error);
+            return {
+                message: 'failed'
+            }
         };
         
     }
