@@ -79,12 +79,13 @@ export class TypeProductService {
                 const { error } = TypePoductRequest.validate({
                     type_product
                 })
-
-                return error ? HttpResponseTraits.checkValidation([error.message]) : (() => {
+                if (error) {
+                    return HttpResponseTraits.checkValidation([error.message]);
+                } else {
                     data.type_product = type_product
-                    data.save()
+                    await data.save()
                     return HttpResponseTraits.success(data)
-                })();
+                }
             }
         } catch (error) {
             console.log(error);
