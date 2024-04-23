@@ -10,7 +10,7 @@ export class TypeProductService {
         private readonly typeProductModel: typeof TypeProductModel,
     ) { }
 
-    async getAllData(page: number = 1, pageSize: number = 0): Promise<any> {
+    async getAllData(page: number = 1, pageSize: number = 10): Promise<any> {
         try {
             const offset = (page - 1) * pageSize
             const data = await this.typeProductModel.findAll({
@@ -19,25 +19,13 @@ export class TypeProductService {
             })
 
             if (!data || data.length == 0) {
-                return HttpResponseTraits.dataNotFound()
+                return HttpResponseTraits.dataNotFound();
             } else {
-                const totalCount = await this.typeProductModel.count()
-                const totalPages = Math.ceil(totalCount / pageSize)
-
-                let nextUrl = null
-
-                if (page < totalPages) {
-                    const nextPage = Math.min(page + 1, totalPages)
-                    nextUrl = `typeproduct=${nextPage}`
-                }
-
-                let prevUrl = null
-
-                if (page > 1) {
-                    const prevPage = page - 1
-                    nextUrl = `typeproduct=${prevPage}`
-                }
-
+                const totalCount = await this.typeProductModel.count();
+                const totalPages = Math.ceil(totalCount / pageSize);
+                const nextUrl = (page < totalPages) ? `typeproduct=${Math.min(page + 1, totalPages)}` : null;
+                const prevUrl = (page > 1) ? `typeproduct=${page - 1}` : null;
+            
                 return HttpResponseTraits.success({
                     data: data,
                     currentPage: page,
@@ -47,8 +35,8 @@ export class TypeProductService {
                     nextPage: nextUrl,
                     prevPage: prevUrl
                 });
-
             }
+            
         } catch (error) {
             console.log(error);
         };
@@ -61,22 +49,15 @@ export class TypeProductService {
                 type_product
             })
 
-            if (error) {
-                const errors = [error.message];
-                return HttpResponseTraits.checkValidation(errors)
-            }
-            const data = await this.typeProductModel.create({
-                type_product
-            })
-
-            return HttpResponseTraits.success(data)
+            return error ? HttpResponseTraits.checkValidation([error.message]) : (() => {
+                const data = this.typeProductModel.create({
+                    type_product
+                })
+                return HttpResponseTraits.success(data)
+            })();
         } catch (error) {
             console.log(error);
-            return {
-                message: 'failed'
-            }
         };
-
     }
 
     async getDataById(id: string): Promise<any> {
