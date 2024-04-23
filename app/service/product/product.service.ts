@@ -31,18 +31,8 @@ export class ProductService {
             } else {
                 const totalCount = await this.productModel.count();
                 const totalPages = Math.ceil(totalCount / pageSize);
-
-                let nextUrl = null;
-                if (page < totalPages) {
-                    const nextPage = Math.min(page + 1, totalPages);
-                    nextUrl = `product?page=${nextPage}`;
-                }
-
-                let prevUrl = null;
-                if (page > 1) {
-                    const prevPage = page - 1;
-                    prevUrl = `product?page=${prevPage}`;
-                }
+                const nextUrl = (page < totalPages) ? `product?page=${Math.min(page + 1, totalPages)}` : null;
+                const prevUrl = (page > 1) ? `product?page=${page - 1}` : null
 
                 return HttpResponseTraits.success({
                     data: data,
@@ -55,34 +45,28 @@ export class ProductService {
                 });
             }
         } catch (error) {
-            console.error('Error while fetching products:', error);
-            throw error;
+            console.error(error);
+            return HttpResponseTraits.errorMessage()
         }
     }
 
     async getDataById(id: string): Promise<any> {
         try {
             const data = await this.productModel.findByPk(id)
-            if (!data) {
-                return HttpResponseTraits.idOrDataNotFound()
-            } else {
-                return HttpResponseTraits.success(data)
-            }
+            return (!data) ? HttpResponseTraits.idOrDataNotFound() : HttpResponseTraits.success(data)
         } catch (error) {
             console.log(error);
         };
-
     }
 
     async createData(productData: any, productImage: any): Promise<any> {
         try {
             const { product_name, stok, price } = productData;
             const { error } = ProductRequest.validate({ product_name, price, stok, product_image: productImage });
-
             if (error) {
-                const errors = [error.message];
-                return HttpResponseTraits.checkValidation(errors);
+                return HttpResponseTraits.checkValidation([error.message]);
             }
+
             const filename = `${uuidv4()}-${productImage.originalname}`;
             const uploadPath = `./assets/uploads/product/${filename}`;
             const writeStream = createWriteStream(uploadPath);
@@ -98,46 +82,37 @@ export class ProductService {
             return HttpResponseTraits.success(data);
         } catch (error) {
             console.log(error);
-            return {
-                message: 'failed'
-            };
+            return HttpResponseTraits.errorMessage()
         }
     }
 
     async updateData(productData: any, productImage: any, id: string): Promise<any> {
         try {
             const { product_name, stok, price } = productData
-            let updateData
+            let updateData = await this.productModel.findByPk(id);
             if (productImage) {
                 const filename = `${uuidv4()}-${productImage.originalname}`;
                 const uploadPath = `./assets/uploads/product/${filename}`;
                 const writeStream = createWriteStream(uploadPath);
                 writeStream.write(productImage.buffer);
-
-                updateData = await this.productModel.findByPk(id);
-                if (updateData) {
-                    if (updateData.product_image) {
-                        await unlink(`./assets/uploads/product/${updateData.product_image}`);
-                    }
-                    updateData.product_image = product_name
-                    updateData.stok = stok
-                    updateData.price = price
-                    updateData.product_image = filename
-                    await updateData.save();
+                if (updateData.product_image) {
+                    await unlink(`./assets/uploads/product/${updateData.product_image}`);
                 }
+                updateData.product_image = product_name
+                updateData.stok = stok
+                updateData.price = price
+                updateData.product_image = filename
             } else {
-                updateData = await this.productModel.findByPk(id);
-                if (updateData) {
-                    updateData.product_name = product_name;
-                    updateData.price = price;
-                    updateData.stok = stok;
-                    await updateData.save();
-                }
+                updateData.product_name = product_name;
+                updateData.price = price;
+                updateData.stok = stok;
             }
+            await updateData.save();
 
             return HttpResponseTraits.success(updateData)
         } catch (error) {
             console.log(error);
+            return HttpResponseTraits.errorMessage()
         };
 
     }
@@ -148,17 +123,14 @@ export class ProductService {
             if (!data) {
                 return HttpResponseTraits.idOrDataNotFound()
             }
-
             console.log(data.product_image);
             const imagePath = "./assets/uploads/product/" + data.product_image;
-
             await unlink(imagePath)
-
             await data.destroy()
-
             return HttpResponseTraits.delete()
         } catch (error) {
             console.log(error);
+            return HttpResponseTraits.errorMessage()
         };
 
     }
@@ -176,7 +148,7 @@ export class ProductService {
             const imageBuffer = fs.readFileSync(imagePath);
             return imageBuffer;
         } catch (error) {
-            console.error(error);
+            console.log(error);
             return null;
         }
     }
