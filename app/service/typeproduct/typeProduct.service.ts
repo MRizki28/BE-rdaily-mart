@@ -25,7 +25,7 @@ export class TypeProductService {
                 const totalPages = Math.ceil(totalCount / pageSize);
                 const nextUrl = (page < totalPages) ? `typeproduct=${Math.min(page + 1, totalPages)}` : null;
                 const prevUrl = (page > 1) ? `typeproduct=${page - 1}` : null;
-            
+
                 return HttpResponseTraits.success({
                     data: data,
                     currentPage: page,
@@ -36,7 +36,7 @@ export class TypeProductService {
                     prevPage: prevUrl
                 });
             }
-            
+
         } catch (error) {
             console.log(error);
         };
@@ -48,13 +48,13 @@ export class TypeProductService {
             const { error } = TypePoductRequest.validate({
                 type_product
             })
-
-            return error ? HttpResponseTraits.checkValidation([error.message]) : (() => {
-                const data = this.typeProductModel.create({
-                    type_product
-                })
-                return HttpResponseTraits.success(data)
-            })();
+            if (error) {
+                return HttpResponseTraits.checkValidation([error.message])
+            }
+            const data = await this.typeProductModel.create({
+                type_product
+            })
+            return HttpResponseTraits.success(data)
         } catch (error) {
             console.log(error);
         };
