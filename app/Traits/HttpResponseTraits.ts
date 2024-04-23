@@ -43,6 +43,13 @@ export class HttpResponseTraits {
         };
     }
 
+    static errorMessage(message: string = 'Error Server', code: number = 400): HttpResponse {
+        return {
+            code: code,
+            message: message
+        };
+    }
+
     // static error(message: string = 'error', code: number = 400, payload: any = null, className: string | null = null, methodName: string = ''): HttpResponse {
     //     const data: HttpResponse = {
     //         code: code,
