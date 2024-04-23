@@ -50,11 +50,12 @@ export class TypeProductService {
             })
             if (error) {
                 return HttpResponseTraits.checkValidation([error.message])
+            } else {
+                const data = await this.typeProductModel.create({
+                    type_product
+                })
+                return HttpResponseTraits.success(data)
             }
-            const data = await this.typeProductModel.create({
-                type_product
-            })
-            return HttpResponseTraits.success(data)
         } catch (error) {
             console.log(error);
         };
