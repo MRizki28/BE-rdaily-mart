@@ -65,21 +65,19 @@ export class ProductService {
             const { error } = ProductRequest.validate({ product_name, price, stok, product_image: productImage });
             if (error) {
                 return HttpResponseTraits.checkValidation([error.message]);
+            } else {
+                const filename = `${uuidv4()}-${productImage.originalname}`;
+                const uploadPath = `./assets/uploads/product/${filename}`;
+                const writeStream = createWriteStream(uploadPath);
+                writeStream.write(productImage.buffer);
+                const data = await this.productModel.create({
+                    product_name,
+                    price,
+                    stok,
+                    product_image: filename
+                });
+                return HttpResponseTraits.success(data);
             }
-
-            const filename = `${uuidv4()}-${productImage.originalname}`;
-            const uploadPath = `./assets/uploads/product/${filename}`;
-            const writeStream = createWriteStream(uploadPath);
-            writeStream.write(productImage.buffer);
-
-            const data = await this.productModel.create({
-                product_name,
-                price,
-                stok,
-                product_image: filename
-            });
-
-            return HttpResponseTraits.success(data);
         } catch (error) {
             console.log(error);
             return HttpResponseTraits.errorMessage()
