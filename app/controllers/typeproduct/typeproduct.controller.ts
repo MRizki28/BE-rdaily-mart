@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { TypeProductService } from 'app/service/typeproduct/typeProduct.service';
 
 @Controller('typeproduct')
@@ -13,12 +13,12 @@ export class TypeProductController {
         @Query('pageSize') pageSize: number = 10,
     ): Promise<any> {
         try {
-        const data = await this.typeProductService.getAllData(page, pageSize)
-        return data
+            const data = await this.typeProductService.getAllData(page, pageSize)
+            return data
         } catch (error) {
             console.log(error);
         };
-        
+
     }
 
     @Post('/create')
@@ -42,9 +42,19 @@ export class TypeProductController {
     }
 
     @Post('/update/:id')
-    async updateData(@Param('id') id : string, @Body() typeProductData): Promise<any> {
+    async updateData(@Param('id') id: string, @Body() typeProductData): Promise<any> {
         try {
             const data = await this.typeProductService.updateData(typeProductData, id)
+            return data
+        } catch (error) {
+            console.log(error);
+        };
+    }
+    
+    @Delete('/delete/:id')
+    async deleteData(@Param('id') id: string): Promise<any> {
+        try {
+            const data = await this.typeProductService.deleteData(id)
             return data
         } catch (error) {
             console.log(error);
