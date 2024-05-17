@@ -92,4 +92,17 @@ export class TypeProductService {
             console.log(error);
         };
     }
+
+    async deleteData(id: string): Promise<any> {
+        try {
+            const data = await this.typeProductModel.findByPk(id)
+            if (!data) {
+                return HttpResponseTraits.idOrDataNotFound()
+            }
+            await data.destroy();
+            return HttpResponseTraits.delete()
+        } catch (error) {
+            console.log(error);
+        };
+    }
 }
