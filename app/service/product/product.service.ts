@@ -61,16 +61,21 @@ export class ProductService {
 
     async createData(productData: any, productImage: any): Promise<any> {
         try {
-            const { product_name, stok, price } = productData;
-            const { error } = ProductRequest.validate({ product_name, price, stok, product_image: productImage });
+            const { id_type_product, product_name, stok, price } = productData;
+            const { error } = ProductRequest.validate(
+                { id_type_product, product_name, price, stok, product_image: productImage },
+                { abortEarly: false }
+            );
             if (error) {
-                return HttpResponseTraits.checkValidation([error.message]);
+                const errorValidation = error.details.map(details => details.message);
+                return HttpResponseTraits.checkValidation([errorValidation]);
             } else {
                 const filename = `${uuidv4()}-${productImage.originalname}`;
                 const uploadPath = `./assets/uploads/product/${filename}`;
                 const writeStream = createWriteStream(uploadPath);
                 writeStream.write(productImage.buffer);
                 const data = await this.productModel.create({
+                    id_type_product,
                     product_name,
                     price,
                     stok,
@@ -86,33 +91,38 @@ export class ProductService {
 
     async updateData(productData: any, productImage: any, id: string): Promise<any> {
         try {
-            const { product_name, stok, price } = productData
-            let updateData = await this.productModel.findByPk(id);
-            if (productImage) {
+            const { id_type_product, product_name, stok, price } = productData
+            const { error } = ProductRequest.validate(
+                { id_type_product, product_name, price, stok, product_image: productImage },
+                { abortEarly: false }
+            );
+
+            if (error) {
+                const errorValidation = error.details.map(details => details.message)
+                return HttpResponseTraits.checkValidation([errorValidation]);
+            } else {
+                let updateData = await this.productModel.findByPk(id);
                 const filename = `${uuidv4()}-${productImage.originalname}`;
                 const uploadPath = `./assets/uploads/product/${filename}`;
                 const writeStream = createWriteStream(uploadPath);
                 writeStream.write(productImage.buffer);
-                if (updateData.product_image) {
-                    await unlink(`./assets/uploads/product/${updateData.product_image}`);
+                const oldFilePath = `./assets/uploads/product/${updateData.product_image}`;
+                if (await fs.existsSync(oldFilePath)) {
+                    await fs.unlinkSync(oldFilePath);
                 }
-                updateData.product_image = product_name
+                updateData.id_type_product = id_type_product
+                updateData.product_name = product_name
                 updateData.stok = stok
                 updateData.price = price
                 updateData.product_image = filename
-            } else {
-                updateData.product_name = product_name;
-                updateData.price = price;
-                updateData.stok = stok;
-            }
-            await updateData.save();
+                await updateData.save();
 
-            return HttpResponseTraits.success(updateData)
+                return HttpResponseTraits.success(updateData)
+            }
         } catch (error) {
             console.log(error);
             return HttpResponseTraits.errorMessage()
         };
-
     }
 
     async deleteData(id: string): Promise<any> {
