@@ -18,8 +18,8 @@ module.exports = {
           model: 'tb_type_product', 
           key: 'id' 
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'RESTRICT'
       },
 
       product_name: {
