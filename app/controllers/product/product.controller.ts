@@ -23,7 +23,7 @@ export class ProductController {
         }
     }
 
-    @Post()
+    @Post('create')
     @UseInterceptors(FileInterceptor('product_image'))
     async createData(@UploadedFile() productImage, @Body() productData): Promise<any> {
         try {
