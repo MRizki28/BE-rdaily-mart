@@ -133,14 +133,15 @@ export class ProductService {
             }
             console.log(data.product_image);
             const imagePath = "./assets/uploads/product/" + data.product_image;
-            await unlink(imagePath)
             await data.destroy()
+            if (await fs.existsSync(imagePath)) {
+                await fs.unlinkSync(imagePath);
+            }
             return HttpResponseTraits.delete()
         } catch (error) {
             console.log(error);
             return HttpResponseTraits.errorMessage()
         };
-
     }
 
     async getGambar(product_image: string): Promise<Buffer | null> {
