@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CartService } from 'app/service/cart/cart.service';
 
 @Controller('cart')
@@ -15,13 +15,22 @@ export class CartController {
         } catch (error) {
             console.log(error);
         };
-        
     }
 
     @Post('/create/:id')
-    async addCart(@Param('id') id: string,): Promise<any> {
+    async addCart(@Param('id') id: string): Promise<any> {
         try {
             const data = await this.cartService.addCart(id)
+            return data
+        } catch (error) {
+            console.log(error);
+        };
+    }
+
+    @Delete('/delete/:id')
+    async deleteData(@Param('id') id: string): Promise<any> {
+        try {
+            const data = await this.cartService.deleteData(id)
             return data
         } catch (error) {
             console.log(error);
