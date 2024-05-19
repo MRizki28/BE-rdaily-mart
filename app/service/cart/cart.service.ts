@@ -20,7 +20,9 @@ export class CartService {
 
     async getAllData(): Promise<any> {
         try {
-            const data = await this.cartModel.findAll()
+            const data = await this.cartModel.findAll({
+                include: ProductModel
+            })
             if (!data) {
                 return HttpResponseTraits.dataNotFound()
             } else {
@@ -32,30 +34,21 @@ export class CartService {
         };
     }
 
-    async addCart(cartData: any): Promise<any> {
+    async addCart(id: string): Promise<any> {
         try {
-            const  { id_product } = cartData
-            const { error } =  CartRequest.validate({
-                id_product
-            })
+            return this.sequelize.transaction(async (transaction: any) => {
+                const data = await this.cartModel.create({ id_product: id }, { transaction });
+                const product = await this.productModel.findByPk(data.id_product, { transaction });
+                if (!product) {
+                    throw new Error("Product not found");
+                }
+                product.stok -= 1;
+                await product.save({ transaction });
+                return HttpResponseTraits.success(data);
+            });
 
-            if (error) {
-                return HttpResponseTraits.checkValidation([error.message])
-            }else{
-                return this.sequelize.transaction(async (transaction: any) => {
-                    const data = await this.cartModel.create({ id_product }, { transaction });
-                    const product = await this.productModel.findByPk(data.id_product, { transaction });
-                    if (!product) {
-                        throw new Error("Product not found");
-                    }
-                    product.stok -= 1;
-                    await product.save({ transaction });
-                    return HttpResponseTraits.success(data);
-                });
-            }
         } catch (error) {
             console.log(error);
         };
-        
     }
 }
