@@ -43,10 +43,11 @@ export class HttpResponseTraits {
         };
     }
 
-    static errorMessage(message: string = 'Error Server', code: number = 400): HttpResponse {
+    static errorMessage(message: string = 'Error Server', code: number = 400, error: any = null): HttpResponse {
         return {
             code: code,
-            message: message
+            message: message,
+            errors: error
         };
     }
 
