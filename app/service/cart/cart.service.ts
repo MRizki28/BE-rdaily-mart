@@ -29,8 +29,7 @@ export class CartService {
                 return HttpResponseTraits.success(data)
             }
         } catch (error) {
-            console.log(error)
-            return (error)
+            return HttpResponseTraits.errorMessage(error)
         };
     }
 
@@ -48,7 +47,22 @@ export class CartService {
             });
 
         } catch (error) {
-            console.log(error);
+            return HttpResponseTraits.errorMessage(error)
         };
+    }
+
+    async deleteData(id: string): Promise<any> {
+        try {
+            const data = await this.cartModel.findByPk(id)
+            if (!data) {
+                return HttpResponseTraits.idOrDataNotFound()
+            } else {
+                data.destroy();
+                return HttpResponseTraits.delete()
+            }
+        } catch (error) {
+            return HttpResponseTraits.errorMessage(error)
+        };
+
     }
 }
