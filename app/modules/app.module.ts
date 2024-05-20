@@ -5,6 +5,7 @@ import { ProductModule } from './product/product.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { TypeProductModule } from './typeproduct/typeProduct.module';
 import { CartModule } from './cart/cart.module';
+import { UserModule } from './user/user.module';
 
 require('dotenv').config();
 @Module({
@@ -22,6 +23,7 @@ require('dotenv').config();
     ProductModule,
     TypeProductModule,
     CartModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
