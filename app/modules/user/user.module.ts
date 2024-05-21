@@ -13,8 +13,9 @@ require('dotenv').config();
         SequelizeModule.forFeature([UserModel]),
         PassportModule,
         JwtModule.register({
+            global: true,
             secret: process.env.SECRET_KEY,
-            signOptions: { expiresIn: '60s' }
+            signOptions: { expiresIn: '60s' },
         }),
     ],
     providers: [UserService, JwtStrategy],
