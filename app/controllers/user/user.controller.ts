@@ -8,11 +8,22 @@ export class UserController {
         private readonly userService: UserService
     ) {}
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Post('/register')
     async register(@Body() userData): Promise<any> {
         try {
             const data = await this.userService.register(userData)
+            return data
+        } catch (error) {
+            console.log(error);
+        };
+        
+    }
+
+    @Post('/refreshtoken')
+    async refreshToken(@Body('refreshToken') refreshToken: string): Promise<any> {
+        try {
+            const data = await this.userService.refreshToken(refreshToken)
             return data
         } catch (error) {
             console.log(error);
