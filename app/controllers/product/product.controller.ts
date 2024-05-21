@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res, UploadedFile, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'app/auth/jwt-auth.guard';
 import { ProductService } from 'app/service/product/product.service';
 import { Response } from 'express';
 
@@ -23,6 +24,7 @@ export class ProductController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('create')
     @UseInterceptors(FileInterceptor('product_image'))
     async createData(@UploadedFile() productImage, @Body() productData): Promise<any> {
@@ -34,6 +36,7 @@ export class ProductController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('update/:id')
     @UseInterceptors(FileInterceptor('product_image'))
     async updateData(@Param('id') id: string, @UploadedFile() productImage, @Body() productData): Promise<any> {
@@ -55,6 +58,7 @@ export class ProductController {
         };
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete('delete/:id')
     async deleteData(@Param('id') id: string): Promise<any> {
         try {
