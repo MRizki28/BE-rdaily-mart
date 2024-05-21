@@ -29,9 +29,15 @@ export class UserModel extends Model<UserModel> {
 
     @Column({
         type: DataType.STRING,
-        allowNull: false,
+        allowNull: true,
     })
     access_token: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    refresh_token: string;
 
     @CreatedAt
     created_at: Date;
