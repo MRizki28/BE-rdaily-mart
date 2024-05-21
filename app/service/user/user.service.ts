@@ -18,12 +18,15 @@ export class UserService {
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return HttpResponseTraits.validationLogin;
         }
+
+        const refresh_token = user.refresh_token
         const payload = { username: user.username, sub: user.id }
         const access_token = this.jwtService.sign(payload)
         await this.userModel.update({ access_token }, { where: { id: user.id } })
         return {
             message: "Sukses login",
-            access_token: access_token
+            access_token: access_token,
+            refresh_token: refresh_token
         }
     }
 
@@ -34,16 +37,67 @@ export class UserService {
             const newUser = await this.userModel.create({
                 username,
                 password: hashedPassword,
-                access_token: '',
+                // access_token: '',
             });
             const payload = { username: newUser.username, sub: newUser.id };
             const access_token = this.jwtService.sign(payload);
-            await this.userModel.update({ access_token }, { where: { id: newUser.id } });
-            return HttpResponseTraits.success({ user: newUser, access_token });
+            const refresh_token = this.jwtService.sign(payload, {
+                expiresIn: '7d'
+            });
+
+            await this.userModel.update({ access_token, refresh_token }, { where: { id: newUser.id } });
+            return HttpResponseTraits.success({
+                user: newUser, access_token, refresh_token
+            });
         } catch (error) {
             console.log(error);
             return HttpResponseTraits.errorMessage(error);
         }
     }
 
+    async refreshToken(refreshToken: string): Promise<any> {
+        try {
+            const user = await this.userModel.findOne({ where: { refresh_token: refreshToken } });
+            if (!user) {
+                return HttpResponseTraits.errorMessage("Invalid refresh token");
+            }
+
+            let newRefreshTokenNeeded = false;
+
+            try {
+                this.jwtService.verify(refreshToken);
+            } catch (error) {
+                if (error.name === 'TokenExpiredError') {
+                    newRefreshTokenNeeded = true;
+                } else {
+                    return HttpResponseTraits.errorMessage("Failed to verify refresh token");
+                }
+            }
+
+            if (newRefreshTokenNeeded == true) {
+                const payload = { username: user.username, sub: user.id };
+                const accessToken = this.jwtService.sign(payload);
+                const refresh_token = this.jwtService.sign(payload, {
+                    expiresIn: '7d'
+                });
+                await this.userModel.update({ access_token: accessToken, refresh_token: refresh_token }, { where: { id: user.id } });
+                return HttpResponseTraits.success({
+                    message: "Access token refreshed successfully",
+                    access_token: accessToken,
+                    refresh_token: refresh_token 
+                });
+            }else{
+                const payload = { username: user.username, sub: user.id };
+                const accessToken = this.jwtService.sign(payload);
+                await this.userModel.update({ access_token: accessToken }, { where: { id: user.id } });
+                return HttpResponseTraits.success({
+                    message: "Access token refreshed successfully",
+                    access_token: accessToken,
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            return HttpResponseTraits.errorMessage(error.message);
+        }
+    }
 }
