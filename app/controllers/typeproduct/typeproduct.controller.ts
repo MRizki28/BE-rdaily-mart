@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'app/auth/jwt-auth.guard';
 import { TypeProductService } from 'app/service/typeproduct/typeProduct.service';
 
 @Controller('typeproduct')
@@ -21,6 +22,7 @@ export class TypeProductController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('/create')
     async createData(@Body() typeProductData): Promise<any> {
         try {
@@ -41,6 +43,7 @@ export class TypeProductController {
         };
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('/update/:id')
     async updateData(@Param('id') id: string, @Body() typeProductData): Promise<any> {
         try {
@@ -51,6 +54,7 @@ export class TypeProductController {
         };
     }
     
+    @UseGuards(JwtAuthGuard)
     @Delete('/delete/:id')
     async deleteData(@Param('id') id: string): Promise<any> {
         try {
